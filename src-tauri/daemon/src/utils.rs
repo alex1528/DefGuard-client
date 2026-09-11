@@ -30,6 +30,15 @@ pub fn logging_setup(
     log_level: &str,
     log_max_files: usize,
 ) -> Result<WorkerGuard, LoggingSetupError> {
+    // Ensure the log directory exists before initializing the appender.
+    // On a fresh install the directory may not exist yet; tracing-appender's
+    // RollingFileAppender does not create it and would return an InitError,
+    // which previously crashed the Windows service on startup (SCM then reports
+    // the generic "failed to start / insufficient privileges" error).
+    if let Err(err) = fs::create_dir_all(log_dir) {
+        eprintln!("Failed to create log directory {log_dir}: {err}");
+    }
+
     migrate_service_log_files(Path::new(log_dir)).map_err(LoggingSetupError::Migration)?;
 
     // prepare log file appender

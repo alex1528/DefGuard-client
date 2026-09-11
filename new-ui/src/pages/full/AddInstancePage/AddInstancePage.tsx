@@ -2,7 +2,7 @@ import './style.scss';
 
 import { useLoaderData, useNavigate, useSearch } from '@tanstack/react-router';
 import { error } from '@tauri-apps/plugin-log';
-import { Fragment, useMemo } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import z from 'zod';
 import { Button } from '../../../shared/components/Button/Button';
 import { ButtonVariant } from '../../../shared/components/Button/types';
@@ -15,6 +15,7 @@ import { FullPage } from '../../../shared/layouts/FullPage/FullPage';
 import { Snackbar } from '../../../shared/providers/snackbar/snackbar';
 import {
   enrollmentAddInstance,
+  enrollmentAutoActivateAndFinish,
   enrollmentCreateDevice,
 } from '../../../shared/rust-api/enrollment';
 import { ThemeSpacing } from '../../../shared/types';
@@ -33,6 +34,8 @@ export const AddInstancePage = () => {
   const navigate = useNavigate();
   const { deviceName } = useLoaderData({ from: '/full/_default/add/instance' });
   const searchValues = useSearch({ from: '/full/_default/add/instance' });
+  const autoSubmitFired = useRef(false);
+  const [autoSubmitting, setAutoSubmitting] = useState(false);
 
   const hasInitialValues = isPresent(searchValues.token) && isPresent(searchValues.url);
 
@@ -58,22 +61,26 @@ export const AddInstancePage = () => {
           formApi.setErrorMap({
             onSubmit: { fields: { url: 'Invalid URL.' } },
           });
+          setAutoSubmitting(false);
           return;
         }
         if (result.errorKind === 'unauthorized') {
           formApi.setErrorMap({
             onSubmit: { fields: { token: 'Invalid token.' } },
           });
+          setAutoSubmitting(false);
           return;
         }
         if (result.error?.toLowerCase().includes('device name')) {
           formApi.setErrorMap({
             onSubmit: { fields: { name: 'Name already used.' } },
           });
+          setAutoSubmitting(false);
           return;
         }
         void error(`Failed to add instance: ${result.error ?? 'unknown error'}`);
         Snackbar.error('Communication error, contact administrator.');
+        setAutoSubmitting(false);
         return;
       }
       if (result.session_id) {
@@ -84,6 +91,23 @@ export const AddInstancePage = () => {
         !result.startResponse.user.enrolled &&
         result.session_id
       ) {
+        // Externally-managed (OIDC) users have no local password to set. When
+        // the instance also does not require MFA, the enrollment wizard would
+        // only present two no-op clicks (Welcome -> Finish). Auto-activate and
+        // finish the session, then go straight to the overview. The device and
+        // its VPN configuration were already created by enrollmentCreateDevice
+        // above, so the connection can be started/stopped from the overview.
+        const { user, settings } = result.startResponse;
+        if (user.password_management_disabled && !settings.mfa_required) {
+          const autoResult = await enrollmentAutoActivateAndFinish(result.session_id);
+          if (autoResult.error) {
+            void error(`Auto enrollment failed: ${autoResult.error}`);
+            Snackbar.error('Communication error, contact administrator.');
+            return;
+          }
+          navigate({ to: '/full/overview', replace: true });
+          return;
+        }
         useEnrollmentStore
           .getState()
           .start(result.startResponse, result.session_id, undefined);
@@ -99,6 +123,30 @@ export const AddInstancePage = () => {
       }
     },
   });
+
+  // Auto-submit when deep-link provides token + url (zero-interaction enrollment).
+  // The device name defaults to the machine hostname (from the route loader).
+  // Guarded by a ref to ensure we only fire once even if the effect re-runs.
+  useEffect(() => {
+    if (hasInitialValues && !autoSubmitFired.current) {
+      autoSubmitFired.current = true;
+      setAutoSubmitting(true);
+      form.handleSubmit();
+    }
+  }, [hasInitialValues, form]);
+
+  // While auto-submitting via deep-link, show a minimal loading state
+  // instead of the full form — the user should not need to interact at all.
+  if (autoSubmitting && hasInitialValues) {
+    return (
+      <FullPage id="add-instance-view">
+        <FullPageTitle title="Configuring VPN…" />
+        <p className="page-description">
+          Setting up your connection automatically. This may take a moment.
+        </p>
+      </FullPage>
+    );
+  }
 
   return (
     <FullPage id="add-instance-view">

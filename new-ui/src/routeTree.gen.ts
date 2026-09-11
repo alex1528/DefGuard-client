@@ -28,6 +28,7 @@ import { Route as FullDefaultSupportRouteImport } from './routes/full/_default/s
 import { Route as FullDefaultUpdateRouteImport } from './routes/full/_default/update'
 import { Route as FullDefaultAddIndexRouteImport } from './routes/full/_default/add/index'
 import { Route as FullDefaultAddInstanceRouteImport } from './routes/full/_default/add/instance'
+import { Route as FullDefaultAddOidcLoginRouteImport } from './routes/full/_default/add/oidc-login'
 import { Route as FullDefaultAddTunnelRouteImport } from './routes/full/_default/add/tunnel'
 
 const IndexRoute = IndexRouteImport.update({
@@ -125,6 +126,11 @@ const FullDefaultAddInstanceRoute = FullDefaultAddInstanceRouteImport.update({
   path: '/add/instance',
   getParentRoute: () => FullDefaultRoute,
 } as any)
+const FullDefaultAddOidcLoginRoute = FullDefaultAddOidcLoginRouteImport.update({
+  id: '/add/oidc-login',
+  path: '/add/oidc-login',
+  getParentRoute: () => FullDefaultRoute,
+} as any)
 const FullDefaultAddTunnelRoute = FullDefaultAddTunnelRouteImport.update({
   id: '/add/tunnel',
   path: '/add/tunnel',
@@ -149,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/full/support': typeof FullDefaultSupportRoute
   '/full/update': typeof FullDefaultUpdateRoute
   '/full/add/instance': typeof FullDefaultAddInstanceRoute
+  '/full/add/oidc-login': typeof FullDefaultAddOidcLoginRoute
   '/full/add/tunnel': typeof FullDefaultAddTunnelRoute
   '/full/add/': typeof FullDefaultAddIndexRoute
 }
@@ -169,6 +176,7 @@ export interface FileRoutesByTo {
   '/full/support': typeof FullDefaultSupportRoute
   '/full/update': typeof FullDefaultUpdateRoute
   '/full/add/instance': typeof FullDefaultAddInstanceRoute
+  '/full/add/oidc-login': typeof FullDefaultAddOidcLoginRoute
   '/full/add/tunnel': typeof FullDefaultAddTunnelRoute
   '/full/add': typeof FullDefaultAddIndexRoute
 }
@@ -192,6 +200,7 @@ export interface FileRoutesById {
   '/full/_default/support': typeof FullDefaultSupportRoute
   '/full/_default/update': typeof FullDefaultUpdateRoute
   '/full/_default/add/instance': typeof FullDefaultAddInstanceRoute
+  '/full/_default/add/oidc-login': typeof FullDefaultAddOidcLoginRoute
   '/full/_default/add/tunnel': typeof FullDefaultAddTunnelRoute
   '/full/_default/add/': typeof FullDefaultAddIndexRoute
 }
@@ -215,6 +224,7 @@ export interface FileRouteTypes {
     | '/full/support'
     | '/full/update'
     | '/full/add/instance'
+    | '/full/add/oidc-login'
     | '/full/add/tunnel'
     | '/full/add/'
   fileRoutesByTo: FileRoutesByTo
@@ -235,6 +245,7 @@ export interface FileRouteTypes {
     | '/full/support'
     | '/full/update'
     | '/full/add/instance'
+    | '/full/add/oidc-login'
     | '/full/add/tunnel'
     | '/full/add'
   id:
@@ -257,6 +268,7 @@ export interface FileRouteTypes {
     | '/full/_default/support'
     | '/full/_default/update'
     | '/full/_default/add/instance'
+    | '/full/_default/add/oidc-login'
     | '/full/_default/add/tunnel'
     | '/full/_default/add/'
   fileRoutesById: FileRoutesById
@@ -405,6 +417,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FullDefaultAddInstanceRouteImport
       parentRoute: typeof FullDefaultRoute
     }
+    '/full/_default/add/oidc-login': {
+      id: '/full/_default/add/oidc-login'
+      path: '/add/oidc-login'
+      fullPath: '/full/add/oidc-login'
+      preLoaderRoute: typeof FullDefaultAddOidcLoginRouteImport
+      parentRoute: typeof FullDefaultRoute
+    }
     '/full/_default/add/tunnel': {
       id: '/full/_default/add/tunnel'
       path: '/add/tunnel'
@@ -423,6 +442,7 @@ interface FullDefaultRouteChildren {
   FullDefaultSupportRoute: typeof FullDefaultSupportRoute
   FullDefaultUpdateRoute: typeof FullDefaultUpdateRoute
   FullDefaultAddInstanceRoute: typeof FullDefaultAddInstanceRoute
+  FullDefaultAddOidcLoginRoute: typeof FullDefaultAddOidcLoginRoute
   FullDefaultAddTunnelRoute: typeof FullDefaultAddTunnelRoute
   FullDefaultAddIndexRoute: typeof FullDefaultAddIndexRoute
 }
@@ -435,6 +455,7 @@ const FullDefaultRouteChildren: FullDefaultRouteChildren = {
   FullDefaultSupportRoute: FullDefaultSupportRoute,
   FullDefaultUpdateRoute: FullDefaultUpdateRoute,
   FullDefaultAddInstanceRoute: FullDefaultAddInstanceRoute,
+  FullDefaultAddOidcLoginRoute: FullDefaultAddOidcLoginRoute,
   FullDefaultAddTunnelRoute: FullDefaultAddTunnelRoute,
   FullDefaultAddIndexRoute: FullDefaultAddIndexRoute,
 }

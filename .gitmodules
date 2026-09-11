@@ -1,9 +1,9 @@
 [submodule "src/shared/defguard-ui"]
 	path = src/shared/defguard-ui
-	url = ../ui.git
+	url = https://github.com/DefGuard/ui.git
 [submodule "src-tauri/proto"]
 	path = src-tauri/proto
-	url = ../proto.git
+	url = https://github.com/DefGuard/proto.git
 [submodule "swift/boringtun"]
 	path = swift/boringtun
-	url = ../boringtun.git
+	url = https://github.com/nicholasgasior/boringtun.git

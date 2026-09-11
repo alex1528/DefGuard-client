@@ -17,25 +17,24 @@
       "icons/windows/icon.ico"
     ],
     "windows": {
-      "certificateThumbprint": "c79305cdcb7e5832dd161d18580d6a846bd0506b",
-      "digestAlgorithm": "sha256",
-      "timestampUrl": "http://time.certum.pl/",
       "wix": {
         "upgradeCode": "923b21f5-7d3f-4f5e-8dcb-43fe1c65fb43",
         "bannerPath": "./resources-windows/msi/top_banner.png",
         "dialogImagePath": "./resources-windows/msi/side_banner.png",
-          "fragmentPaths": [
-            "./resources-windows/fragments/service.wxs",
-            "./resources-windows/fragments/provisioning.wxs"
-          ],
-          "componentRefs": [
-            "DefguardServiceFragment",
-            "ProvisioningScriptFragment"
-          ],
+        "fragmentPaths": [
+          "./resources-windows/fragments/service.wxs",
+          "./resources-windows/fragments/provisioning.wxs"
+        ],
+        "componentRefs": [
+          "DefguardServiceFragment",
+          "ProvisioningScriptFragment"
+        ],
         "template": "./resources-windows/msi/main.wxs"
       }
     },
-    "resources": ["resources/icons/tray/*"],
+    "resources": [
+      "resources/icons/tray/*"
+    ],
     "shortDescription": "Defguard desktop client",
     "longDescription": "Defguard desktop client",
     "linux": {
@@ -49,7 +48,9 @@
           "../control/prerm": "../resources-linux/prerm",
           "../control/postrm": "../resources-linux/postrm"
         },
-        "depends": ["desktop-file-utils"]
+        "depends": [
+          "desktop-file-utils"
+        ]
       },
       "rpm": {
         "files": {
@@ -57,7 +58,9 @@
           "/usr/sbin/defguard-service": "target/release/defguard-service",
           "/lib/systemd/system/defguard-service.service": "../resources-linux/defguard-service.service"
         },
-        "depends": ["desktop-file-utils"],
+        "depends": [
+          "desktop-file-utils"
+        ],
         "postInstallScript": "../resources-linux/postinst",
         "preRemoveScript": "../resources-linux/prerm",
         "postRemoveScript": "../resources-linux/postrm"
@@ -70,7 +73,9 @@
   "version": "2.1.1",
   "app": {
     "security": {
-      "capabilities": ["main-capability"],
+      "capabilities": [
+        "main-capability"
+      ],
       "csp": null
     },
     "windows": []
@@ -78,7 +83,9 @@
   "plugins": {
     "deep-link": {
       "desktop": {
-        "schemes": ["defguard"]
+        "schemes": [
+          "defguard"
+        ]
       }
     }
   }

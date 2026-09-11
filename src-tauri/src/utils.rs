@@ -369,7 +369,7 @@ pub fn load_log_targets() -> Vec<String> {
 
 /// Default log file directory for `defguard-service` daemon.
 #[cfg(windows)]
-pub const DEFAULT_SERVICE_LOG_DIR: &str = "/Logs/defguard-service";
+pub const DEFAULT_SERVICE_LOG_DIR: &str = r"C:\ProgramData\Defguard\logs";
 
 #[cfg(not(windows))]
 pub const DEFAULT_SERVICE_LOG_DIR: &str = "/var/log/defguard-service";

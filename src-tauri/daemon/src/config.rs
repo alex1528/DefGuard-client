@@ -1,7 +1,7 @@
 use clap::Parser;
 
 #[cfg(windows)]
-pub const DEFAULT_LOG_DIR: &str = "/Logs/defguard-service";
+pub const DEFAULT_LOG_DIR: &str = r"C:\ProgramData\Defguard\logs";
 #[cfg(not(windows))]
 pub const DEFAULT_LOG_DIR: &str = "/var/log/defguard-service";
 

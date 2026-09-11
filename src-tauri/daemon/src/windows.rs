@@ -107,7 +107,21 @@ fn run_service() -> Result<(), DaemonError> {
         })?;
 
         let config: Config = Config::parse();
-        let _guard = logging_setup(&config.log_dir, &config.log_level, config.log_max_files)?;
+        // A logging failure must never prevent the service from starting. If the
+        // file appender cannot be initialized, degrade gracefully to stdout-only
+        // logging instead of propagating the error (which would panic service_main
+        // and cause SCM to report a start failure).
+        let _guard =
+            match logging_setup(&config.log_dir, &config.log_level, config.log_max_files) {
+                Ok(guard) => Some(guard),
+                Err(err) => {
+                    eprintln!(
+                        "Failed to initialize service logging: {err}. \
+                         Continuing without file logging."
+                    );
+                    None
+                }
+            };
 
         let default_panic = std::panic::take_hook();
         std::panic::set_hook(Box::new(move |info| {

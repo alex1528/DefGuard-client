@@ -167,3 +167,36 @@ export const enrollmentUpdateInstance = async (
     }
   }
 };
+
+/**
+ * Auto-complete enrollment for an externally-managed (OIDC) user.
+ *
+ * When the user is provisioned through an external OpenID provider proxied by
+ * defguard, there is no local password to set and — when the instance does not
+ * require MFA — no interactive wizard step left to perform. The device and its
+ * VPN configuration have already been created/saved by
+ * {@link enrollmentCreateDevice} at this point, so completing enrollment only
+ * requires activating the user (password omitted) and releasing the session.
+ *
+ * Reuses the existing `enrollmentActivateUser` / `enrollmentFinish` commands;
+ * no new backend command is introduced. The session is always released, even
+ * on activation failure, to avoid leaking a server-side enrollment session.
+ *
+ * @param sessionId opaque enrollment session id from `enrollmentStart`
+ * @returns `{}` on success or `{ error }` with a human-readable message
+ */
+export const enrollmentAutoActivateAndFinish = async (
+  sessionId: string,
+): Promise<{ error?: string }> => {
+  try {
+    // Externally-managed users have no password and no phone to submit.
+    await api.enrollmentActivateUser(sessionId, null, null);
+    return {};
+  } catch (e) {
+    const parsed = parseEnrollmentError(e);
+    return { error: parsed.error };
+  } finally {
+    // Best-effort session release; errors here are non-fatal.
+    await api.enrollmentFinish(sessionId).catch(() => {});
+  }
+};

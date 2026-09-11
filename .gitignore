@@ -38,3 +38,6 @@ src-tauri/gen/
 result
 
 target
+commit.sh
+build-windows-unsigned.ps1
+docs/*.md

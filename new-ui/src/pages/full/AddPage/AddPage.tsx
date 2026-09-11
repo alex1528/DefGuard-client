@@ -28,6 +28,17 @@ export const AddPage = () => {
           actionText="Add instance"
           description={`Establish a secure connection to your Defguard instance effortlessly by configuring it with a single token—no manual setup.`}
         />
+        <AddCard
+          image="default"
+          onClick={() => {
+            navigate({
+              to: '/full/add/oidc-login',
+            });
+          }}
+          title="Sign in with SSO"
+          actionText="Sign in"
+          description={`Sign in with your organization's Single Sign-On (OIDC) to automatically configure your VPN\u2014no token required.`}
+        />
         {!tunnelsDisabled(instances ?? []) && (
           <AddCard
             image="wireguard"

@@ -2,9 +2,7 @@ import { Link, type LinkProps } from '@tanstack/react-router';
 import { type ReactNode, useMemo } from 'react';
 import { Icon, IconKind } from '../../../../components/Icon';
 import type { IconKindValue } from '../../../../components/Icon/icon-types';
-import { useUpdateAvailable } from '../../../../hooks/useUpdateAvailable';
 import { useAppData } from '../../../../providers/AppDataContext';
-import { NavBadge } from './components/NavBadge';
 import './style.scss';
 
 type NavItemDef = LinkProps & {
@@ -15,22 +13,6 @@ type NavItemDef = LinkProps & {
 
 export const FullViewNavigation = () => {
   const { isEmpty } = useAppData();
-  const updateAvailable = useUpdateAvailable();
-
-  const bottomLinks: NavItemDef[] = useMemo(
-    (): NavItemDef[] => [
-      {
-        icon: IconKind.Refresh,
-        to: '/full/update',
-        badge: updateAvailable ? <NavBadge /> : undefined,
-      },
-      {
-        icon: IconKind.Report,
-        to: '/full/support',
-      },
-    ],
-    [updateAvailable],
-  );
 
   const topLinks: NavItemDef[] = useMemo(
     (): NavItemDef[] => [
@@ -64,11 +46,6 @@ export const FullViewNavigation = () => {
             .map((item, i) => (
               <NavItem key={i} {...item} />
             ))}
-        </div>
-        <div className="bottom">
-          {bottomLinks.map((item, i) => (
-            <NavItem key={i} {...item} />
-          ))}
         </div>
       </div>
     </div>
